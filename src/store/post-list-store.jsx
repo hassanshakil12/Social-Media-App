@@ -2,6 +2,7 @@ import { createContext, useReducer } from "react";
 
 export const PostList = createContext({
   postList: [],
+  addPosts: () => {},
   addPost: () => {},
   deletePost: () => {},
 });
@@ -12,6 +13,8 @@ const postListReducer = (currPostList, action) => {
     newPostList = currPostList.filter(
       (post) => post.id !== action.payload.postId
     );
+  } else if (action.type === "ADD_INITIAL_POSTS") {
+    newPostList = action.payload.posts;
   } else if (action.type === "ADD_POST") {
     newPostList = [action.payload, ...currPostList];
   }
@@ -19,10 +22,7 @@ const postListReducer = (currPostList, action) => {
 };
 
 const PostListProvider = ({ children }) => {
-  const [postList, dispatchPostList] = useReducer(
-    postListReducer,
-    DEFAULT_LIST
-  );
+  const [postList, dispatchPostList] = useReducer(postListReducer, []);
   const addPost = (userId, title, body, reactions, tags) => {
     // console.log(`${userId} ${title} ${body} ${reactions} ${tags}`);
     dispatchPostList({
@@ -38,6 +38,15 @@ const PostListProvider = ({ children }) => {
     });
   };
 
+  const addPosts = (posts) => {
+    dispatchPostList({
+      type: "ADD_INITIAL_POSTS",
+      payload: {
+        posts,
+      },
+    });
+  };
+
   const deletePost = (postId) => {
     // console.log(`Deleted product's ID is ${postId}`);
     dispatchPostList({
@@ -49,29 +58,10 @@ const PostListProvider = ({ children }) => {
   };
 
   return (
-    <PostList.Provider value={{ postList, addPost, deletePost }}>
+    <PostList.Provider value={{ postList, addPosts, addPost, deletePost }}>
       {children}
     </PostList.Provider>
   );
 };
-
-const DEFAULT_LIST = [
-  {
-    id: "1",
-    title: "Traveling to Skardu",
-    body: "I'm about to visit Skardu for my summer trip hope to enjoy there, Peace out",
-    userId: "45",
-    tags: ["traveling", "summer", "vacations"],
-    reactions: 56,
-  },
-  {
-    id: "2",
-    title: "Graduation Completed",
-    body: "It's hard to believe that I have completed my graduation with flying colors. Happy 😀",
-    userId: "5",
-    tags: ["study", "graduation", "convocation"],
-    reactions: 12,
-  },
-];
 
 export default PostListProvider;

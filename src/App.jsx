@@ -16,7 +16,7 @@ function App() {
       <Navbar />
       <div style={{ display: "flex", width: "100vw", minHeight: "80.5vh" }}>
         <Sidebar selectedTab={selectedTab} setSelectedTab={setSelectedTab} />
-        <div className="posts">
+        <div className="posts" style={{ width: "100%" }}>
           {selectedTab === "Home" ? <PostList /> : <CreatePost />}
         </div>
       </div>

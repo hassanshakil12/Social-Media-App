@@ -6,7 +6,7 @@ const Card = ({ post }) => {
   const { deletePost } = useContext(PostList);
 
   return (
-    <div className="card" style={{ width: "20rem", margin: "2vw" }}>
+    <div className="card" style={{ width: "30rem", margin: "2vw" }}>
       <span
         className="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger"
         onClick={() => deletePost(post.id)}
