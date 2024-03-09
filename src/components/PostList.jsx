@@ -9,27 +9,26 @@ const PostList = () => {
   const [fetching, setFetching] = useState(false);
 
   useEffect(() => {
+    const controller = new AbortController();
+    const signal = controller.signal;
+
     setFetching(true);
-    fetch("https://dummyjson.com/posts")
+    fetch("https://dummyjson.com/posts", { signal })
       .then((res) => res.json())
       .then((data) => {
         addPosts(data.posts);
         setFetching(false);
       });
-  }, []);
 
-  const handleGetPosts = () => {
-    fetch("https://dummyjson.com/posts")
-      .then((res) => res.json())
-      .then((data) => addPosts(data.posts));
-  };
+    return () => {
+      controller.abort();
+    };
+  }, []);
 
   return (
     <>
       {fetching && <Spinner />}
-      {!fetching && postList.length === 0 && (
-        <Message onGetPosts={handleGetPosts} />
-      )}
+      {!fetching && postList.length === 0 && <Message />}
       {!fetching && postList.map((post) => <Card key={post.id} post={post} />)}
     </>
   );
