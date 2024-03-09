@@ -1,31 +1,36 @@
-import React, { useContext, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import Card from "./Card";
 import { PostList as PostListData } from "../store/post-list-store";
 import Message from "./Message";
+import Spinner from "./Spinner";
 
 const PostList = () => {
-  const { postList, addPosts} = useContext(PostListData);
-  const [dataFetched, setDataFetched] = useState(false)
+  const { postList, addPosts } = useContext(PostListData);
+  const [fetching, setFetching] = useState(false);
 
-  if (!dataFetched) {
+  useEffect(() => {
+    setFetching(true);
+    fetch("https://dummyjson.com/posts")
+      .then((res) => res.json())
+      .then((data) => {
+        addPosts(data.posts);
+        setFetching(false);
+      });
+  }, []);
+
+  const handleGetPosts = () => {
     fetch("https://dummyjson.com/posts")
       .then((res) => res.json())
       .then((data) => addPosts(data.posts));
-      setDataFetched(true)
-  }
-
-  const handleGetPosts=()=>{
-    fetch("https://dummyjson.com/posts")
-      .then((res) => res.json())
-      .then((data) => addPosts(data.posts));
-  }
+  };
 
   return (
     <>
-      {postList.length === 0 && <Message onGetPosts={handleGetPosts} />}
-      {postList.map((post) => (
-        <Card key={post.id} post={post} />
-      ))}
+      {fetching && <Spinner />}
+      {!fetching && postList.length === 0 && (
+        <Message onGetPosts={handleGetPosts} />
+      )}
+      {!fetching && postList.map((post) => <Card key={post.id} post={post} />)}
     </>
   );
 };
