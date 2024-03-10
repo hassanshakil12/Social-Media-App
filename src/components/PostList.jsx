@@ -5,31 +5,13 @@ import Message from "./Message";
 import Spinner from "./Spinner";
 
 const PostList = () => {
-  const { postList, addPosts } = useContext(PostListData);
-  const [fetching, setFetching] = useState(false);
-
-  useEffect(() => {
-    const controller = new AbortController();
-    const signal = controller.signal;
-
-    setFetching(true);
-    fetch("https://dummyjson.com/posts", { signal })
-      .then((res) => res.json())
-      .then((data) => {
-        addPosts(data.posts);
-        setFetching(false);
-      });
-
-    return () => {
-      controller.abort();
-    };
-  }, []);
+  const { postList, fetching } = useContext(PostListData);
 
   return (
     <>
       {fetching && <Spinner />}
       {!fetching && postList.length === 0 && <Message />}
-      {!fetching && postList.map((post) => <Card key={post.id} post={post} />)}
+      {!fetching && postList.map((post, index) => <Card key={index} post={post} />)}
     </>
   );
 };
